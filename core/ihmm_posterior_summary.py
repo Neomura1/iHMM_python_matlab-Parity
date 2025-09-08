@@ -1,14 +1,15 @@
-# Auto-generated Python stub mapped from MATLAB file: ihmm_posterior_summary.m
-# Path: ihmm/core/ihmm_posterior_summary.py
-# Intent: Summarize posterior across saved samples.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Compute simple posterior summaries from collected samples."""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def ihmm_posterior_summary(samples, opt):
-    """Summarize posterior across saved samples. (stub).
-    MATLAB counterpart: ihmm_posterior_summary.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    if not samples['beta']:
+        return {}
+    beta_mean = np.mean(np.vstack(samples['beta']), axis=0)
+    Pi_mean = np.mean(np.stack(samples['Pi']), axis=0)
+    summary = {'beta_mean': beta_mean, 'Pi_mean': Pi_mean}
+    return summary
+

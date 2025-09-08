@@ -1,14 +1,19 @@
-# Auto-generated Python stub mapped from MATLAB file: resample_row_transitions.m
-# Path: ihmm/samplers/resample_row_transitions.py
-# Intent: Resample each row Pi_k with sticky bias.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Sample transition probability rows given counts and global weights."""
 
-def resample_row_transitions(counts, alpha, kappa, beta, opt):
-    """Resample each row Pi_k with sticky bias. (stub).
-    MATLAB counterpart: resample_row_transitions.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+from __future__ import annotations
+
+import numpy as np
+
+
+def resample_row_transitions(counts, alpha, kappa, beta, opt=None):
+    counts = np.asarray(counts, dtype=float)
+    K = counts.shape[0]
+    Pi = np.zeros_like(counts)
+    base = alpha * beta
+    for j in range(K):
+        alpha_row = base.copy()
+        if kappa > 0:
+            alpha_row[j] += kappa
+        Pi[j, :] = np.random.dirichlet(alpha_row + counts[j, :])
+    return Pi
+

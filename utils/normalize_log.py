@@ -1,14 +1,23 @@
-# Auto-generated Python stub mapped from MATLAB file: normalize_log.m
-# Path: ihmm/utils/normalize_log.py
-# Intent: Normalize log-probs along axis; returns (logP, lse).
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Normalise log-probabilities along a given axis.
 
-def normalize_log(logP, axis=0):
-    """Normalize log-probs along axis; returns (logP, lse). (stub).
-    MATLAB counterpart: normalize_log.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+The routine is used extensively when working with probabilities in the
+log-domain.  Given an array ``logP`` it subtracts the log-sum-exp so that
+``exp(logP)`` sums to one along ``axis``.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+
+from .logsumexp import logsumexp
+
+
+def normalize_log(logP, axis: int = 0):
+    """Normalise ``logP`` along ``axis`` and return the log normaliser."""
+
+    logP = np.asarray(logP)
+    lse = logsumexp(logP, axis=axis)
+    # ``np.expand_dims`` to broadcast subtraction similar to MATLAB bsxfun
+    logP_norm = logP - np.expand_dims(lse, axis=axis)
+    return logP_norm, lse
+

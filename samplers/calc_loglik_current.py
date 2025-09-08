@@ -1,14 +1,33 @@
-# Auto-generated Python stub mapped from MATLAB file: calc_loglik_current.m
-# Path: ihmm/samplers/calc_loglik_current.py
-# Intent: Compute current joint log-likelihood (obs + transitions).
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Compute joint log likelihood of data under current state."""
+
+from __future__ import annotations
+
+import numpy as np
+
+from utils.logsumexp import logsumexp
+from emissions.gauss_diag_loglik import gauss_diag_loglik
+from emissions.poisson_loglik import poisson_loglik
+
 
 def calc_loglik_current(Y, state, opt):
-    """Compute current joint log-likelihood (obs + transitions). (stub).
-    MATLAB counterpart: calc_loglik_current.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    family = opt['emission']['family']
+    if family == 'gauss_diag':
+        ll_fun = gauss_diag_loglik
+    elif family == 'poisson':
+        ll_fun = poisson_loglik
+    else:
+        raise ValueError(f'unknown emission family {family}')
+
+    Pi = state['Pi']
+    log_trans = np.log(np.maximum(Pi, 1e-300))
+    total = 0.0
+    for y in Y:
+        loglik = ll_fun(y, state['theta'])
+        K, T = loglik.shape
+        log_alpha = loglik[:, 0]
+        for t in range(1, T):
+            temp = log_alpha[:, None] + log_trans
+            log_alpha = loglik[:, t] + logsumexp(temp, axis=0)
+        total += logsumexp(log_alpha)
+    return float(total)
+

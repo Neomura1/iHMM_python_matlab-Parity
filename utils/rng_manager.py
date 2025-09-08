@@ -1,14 +1,17 @@
-# Auto-generated Python stub mapped from MATLAB file: rng_manager.m
-# Path: ihmm/utils/rng_manager.py
-# Intent: Set global RNG seed (MATLAB parity).
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Simple RNG manager used to sync randomness with MATLAB implementations."""
 
-def rng_manager(seed=1):
-    """Set global RNG seed (MATLAB parity). (stub).
-    MATLAB counterpart: rng_manager.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
+from __future__ import annotations
+
+import numpy as np
+
+
+def rng_manager(seed: int = 1):
+    """Seed the global NumPy RNG.
+
+    The MATLAB code uses ``rng(seed,'twister')``; in NumPy we simply seed
+    the default RNG which suffices for reproducibility in the examples and
+    tests.
     """
-    pass
+
+    np.random.seed(int(seed))
+

@@ -1,14 +1,31 @@
-# Auto-generated Python stub mapped from MATLAB file: gauss_diag_loglik.m
-# Path: ihmm/emissions/gauss_diag_loglik.py
-# Intent: KxT matrix of log-likelihoods under diag-Gaussian.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Evaluate diagonal Gaussian log likelihoods for all states."""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def gauss_diag_loglik(Y, theta_set):
-    """KxT matrix of log-likelihoods under diag-Gaussian. (stub).
-    MATLAB counterpart: gauss_diag_loglik.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
+    """Return a ``K×T`` array of log-likelihoods.
+
+    Parameters
+    ----------
+    Y : ndarray, shape (T, D)
+        Observation sequence.
+    theta_set : list of dict
+        Each element contains ``mu`` and ``sigma2`` for a state.
     """
-    pass
+
+    Y = np.asarray(Y)
+    T, D = Y.shape
+    K = len(theta_set)
+    LL = np.empty((K, T))
+    const = -0.5 * D * np.log(2 * np.pi)
+    for k, th in enumerate(theta_set):
+        mu = th['mu']
+        var = th['sigma2']
+        diff = Y - mu
+        ll = const - 0.5 * np.sum(np.log(var)) - 0.5 * np.sum(diff**2 / var, axis=1)
+        LL[k, :] = ll
+    return LL
+
