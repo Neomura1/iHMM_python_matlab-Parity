@@ -1,14 +1,14 @@
-# Auto-generated Python stub mapped from MATLAB file: dirichlet_draw.m
-# Path: ihmm/hdp/dirichlet_draw.py
-# Intent: Sample a Dirichlet vector given concentration alpha_vec.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Sample from a Dirichlet distribution."""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def dirichlet_draw(alpha_vec):
-    """Sample a Dirichlet vector given concentration alpha_vec. (stub).
-    MATLAB counterpart: dirichlet_draw.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    alpha_vec = np.asarray(alpha_vec, dtype=float)
+    if np.any(alpha_vec <= 0):
+        raise ValueError('alpha parameters must be positive')
+    sample = np.random.gamma(alpha_vec, 1.0)
+    return sample / sample.sum()
+

@@ -1,14 +1,55 @@
-# Auto-generated Python stub mapped from MATLAB file: ex_gauss1d_da.m
-# Path: ihmm/examples/ex_gauss1d_da.py
-# Intent: Example: 1D Gaussian observations with DA sampler.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+import os
+import sys
+import numpy as np
 
-def ex_gauss1d_da():
-    """Example: 1D Gaussian observations with DA sampler. (stub).
-    MATLAB counterpart: ex_gauss1d_da.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
+# allow running from the repository root without installing as a package
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from core.ihmm_fit import ihmm_fit
+
+
+def ex_gauss1d_da(seed: int = 0):
+    """Run a small iHMM on 1D Gaussian data using the direct-assignment sampler.
+
+    Generates synthetic observations from three Gaussian states, trains the
+    iHMM and prints a few posterior summaries.
     """
-    pass
+
+    rng = np.random.default_rng(seed)
+    T = 200
+    mus = np.array([-2.0, 0.0, 2.0])
+    sigmas = np.array([0.3, 0.2, 0.3])
+    z_true = rng.integers(0, len(mus), size=T)
+    y = mus[z_true] + rng.normal(scale=sigmas[z_true])
+    Y = [y[:, None]]  # single sequence with shape (T, 1)
+
+    opt = {
+        'seed': seed,
+        'K_init': 5,
+        'alpha': 6.0,
+        'gamma': 6.0,
+        'n_iter': 100,
+        'burnin': 50,
+        'thin': 1,
+        'emission': {
+            'family': 'gauss_diag',
+            'prior': {
+                'mu0': np.zeros(1),
+                'kappa0': np.ones(1),
+                'a0': np.ones(1),
+                'b0': np.ones(1),
+            },
+        },
+    }
+
+    state, samples, summary = ihmm_fit(Y, opt)
+    print('beta_mean:', summary['beta_mean'])
+    print('Pi_mean:', summary['Pi_mean'])
+    mask = summary['beta_mean'] > 0.05
+    print('mu_mean:', summary.get('mu_mean')[mask])
+    print('sigma2_mean:', summary.get('sigma2_mean')[mask])
+    print('z sample (first 20):', samples['z'][-1][0][:20])
+
+
+if __name__ == '__main__':
+    ex_gauss1d_da()

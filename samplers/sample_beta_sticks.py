@@ -1,14 +1,15 @@
-# Auto-generated Python stub mapped from MATLAB file: sample_beta_sticks.m
-# Path: ihmm/samplers/sample_beta_sticks.py
-# Intent: Sample global GEM weights beta from counts.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Sample the global stick weights ``beta`` from table counts."""
 
-def sample_beta_sticks(counts, gamma, opt):
-    """Sample global GEM weights beta from counts. (stub).
-    MATLAB counterpart: sample_beta_sticks.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+from __future__ import annotations
+
+import numpy as np
+
+from hdp.dirichlet_draw import dirichlet_draw
+
+
+def sample_beta_sticks(counts, gamma, opt=None):
+    m = counts.sum(axis=0)
+    K = m.shape[0]
+    alpha = m + gamma / K
+    return dirichlet_draw(alpha)
+

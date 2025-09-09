@@ -1,14 +1,12 @@
-# Auto-generated Python stub mapped from MATLAB file: ex_gauss1d_beam.m
-# Path: ihmm/examples/ex_gauss1d_beam.py
-# Intent: Example: 1D Gaussian observations with Beam sampler.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Placeholder for beam-sampler example.
+
+The beam sampler is not yet ported to Python; this stub exists to keep
+parity with the MATLAB repository."""
+
 
 def ex_gauss1d_beam():
-    """Example: 1D Gaussian observations with Beam sampler. (stub).
-    MATLAB counterpart: ex_gauss1d_beam.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    raise NotImplementedError('Beam sampler not yet implemented in Python')
+
+
+if __name__ == '__main__':
+    ex_gauss1d_beam()

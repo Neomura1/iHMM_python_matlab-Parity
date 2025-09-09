@@ -1,14 +1,15 @@
-# Auto-generated Python stub mapped from MATLAB file: sticky_adjustment.m
-# Path: ihmm/hdp/sticky_adjustment.py
-# Intent: Convert sticky kappa to self-transition pseudo-counts.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Apply sticky self-transition bias to count matrix."""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def sticky_adjustment(kappa, counts):
-    """Convert sticky kappa to self-transition pseudo-counts. (stub).
-    MATLAB counterpart: sticky_adjustment.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    """Add ``kappa`` to the diagonal of the count matrix."""
+
+    counts = np.asarray(counts, dtype=float)
+    if kappa <= 0:
+        return counts
+    return counts + np.eye(counts.shape[0]) * kappa
+

@@ -1,14 +1,17 @@
-# Auto-generated Python stub mapped from MATLAB file: stick_breaking.m
-# Path: ihmm/hdp/stick_breaking.py
-# Intent: GEM(gamma) stick-breaking truncated at K_trunc.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Draw a truncated GEM stick-breaking sequence."""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def stick_breaking(gamma, K_trunc):
-    """GEM(gamma) stick-breaking truncated at K_trunc. (stub).
-    MATLAB counterpart: stick_breaking.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    v = np.random.beta(1.0, gamma, size=K_trunc)
+    sticks = np.empty(K_trunc)
+    remaining = 1.0
+    for k in range(K_trunc - 1):
+        sticks[k] = v[k] * remaining
+        remaining *= 1.0 - v[k]
+    sticks[-1] = remaining
+    return sticks
+

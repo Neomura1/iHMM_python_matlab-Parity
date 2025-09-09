@@ -1,14 +1,37 @@
-# Auto-generated Python stub mapped from MATLAB file: ihmm_posterior_summary.m
-# Path: ihmm/core/ihmm_posterior_summary.py
-# Intent: Summarize posterior across saved samples.
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Compute simple posterior summaries from collected samples."""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def ihmm_posterior_summary(samples, opt):
-    """Summarize posterior across saved samples. (stub).
-    MATLAB counterpart: ihmm_posterior_summary.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    if not samples['beta']:
+        return {}
+    beta_mean = np.mean(np.vstack(samples['beta']), axis=0)
+    Pi_mean = np.mean(np.stack(samples['Pi']), axis=0)
+
+    summary = {'beta_mean': beta_mean, 'Pi_mean': Pi_mean}
+
+    if samples['theta']:
+        family = opt['emission']['family']
+        if family == 'gauss_diag':
+            mu = np.array([[th['mu'] for th in thetas] for thetas in samples['theta']])
+            sigma2 = np.array([[th['sigma2'] for th in thetas] for thetas in samples['theta']])
+            mu_mean = mu.mean(axis=0).squeeze()
+            sigma2_mean = sigma2.mean(axis=0).squeeze()
+            order = np.argsort(mu_mean)
+            summary['mu_mean'] = mu_mean[order]
+            summary['sigma2_mean'] = sigma2_mean[order]
+            summary['beta_mean'] = beta_mean[order]
+            summary['Pi_mean'] = Pi_mean[order][:, order]
+        elif family == 'poisson':
+            lam = np.array([[th['lam'] for th in thetas] for thetas in samples['theta']])
+            lam_mean = lam.mean(axis=0).squeeze()
+            order = np.argsort(lam_mean)
+            summary['lambda_mean'] = lam_mean[order]
+            summary['beta_mean'] = beta_mean[order]
+            summary['Pi_mean'] = Pi_mean[order][:, order]
+
+    return summary
+

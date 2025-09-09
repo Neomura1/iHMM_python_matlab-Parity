@@ -1,14 +1,26 @@
-# Auto-generated Python stub mapped from MATLAB file: sample_discrete.m
-# Path: ihmm/utils/sample_discrete.py
-# Intent: Sample from a 1D discrete distribution (row vector).
-# NOTE: Keep signature & data structures MATLAB-parity for easy line-by-line translation.
+"""Draw a single sample from a discrete distribution.
+
+The function expects a one dimensional array ``p`` containing (possibly
+unnormalised) probabilities.  The return value is the sampled index in
+``0 … len(p)-1``.  This mirrors the MATLAB helper ``sample_discrete.m``
+used throughout the original code base.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+
 
 def sample_discrete(p):
-    """Sample from a 1D discrete distribution (row vector). (stub).
-    MATLAB counterpart: sample_discrete.m
-    Args:
-        *args, **kwargs: placeholder — use explicit (Y, state, opt, ...) in real impl.
-    Returns:
-        None (stub)
-    """
-    pass
+    """Return an index sampled according to ``p``."""
+
+    p = np.asarray(p, dtype=float)
+    if p.ndim != 1:
+        raise ValueError("p must be a 1D array")
+    total = p.sum()
+    if total <= 0:
+        raise ValueError("distribution has non-positive mass")
+    cdf = np.cumsum(p / total)
+    r = np.random.rand()
+    return int(np.searchsorted(cdf, r))
+
