@@ -17,6 +17,7 @@ from hdp.crf_table_counts import crf_table_counts
 from samplers.sample_beta_sticks import sample_beta_sticks
 from samplers.resample_row_transitions import resample_row_transitions
 from samplers.ffbs_slice_sample_z import ffbs_slice_sample_z
+from samplers.birth_death_prune import birth_death_prune
 
 
 def sampler_da(Y, state, opt):
@@ -41,6 +42,12 @@ def sampler_da(Y, state, opt):
         z = ffbs_slice_sample_z(loglik, state['Pi'])
         z_list.append(z)
     state['z'] = z_list
+
+    # Optional pruning of unused states (prefer pruning during sampling)
+    prune_info = {}
+    if opt.get('prune_unused_states', True):
+        state, prune_info = birth_death_prune(state, opt)
+        z_list = state['z']
 
     # Customer and table counts
     counts = crf_customer_counts(z_list)
@@ -75,5 +82,10 @@ def sampler_da(Y, state, opt):
     posts = post_fun(SS_tot, opt['emission']['prior'])
     state['theta'] = [sample_fun(p) for p in posts]
 
-    return state
+    # Diagnostics to expose pruning and current K
+    diag = {
+        'K': len(state['beta']),
+        'prune': prune_info,
+    }
 
+    return state, diag
