@@ -28,8 +28,8 @@ def ex_gauss1d_da(seed: int = 0):
         'K_init': 5,
         'alpha': 6.0,
         'gamma': 6.0,
-        'n_iter': 30,
-        'burnin': 15,
+        'n_iter': 100,
+        'burnin': 50,
         'thin': 1,
         'emission': {
             'family': 'gauss_diag',
@@ -45,6 +45,9 @@ def ex_gauss1d_da(seed: int = 0):
     state, samples, summary = ihmm_fit(Y, opt)
     print('beta_mean:', summary['beta_mean'])
     print('Pi_mean:', summary['Pi_mean'])
+    mask = summary['beta_mean'] > 0.05
+    print('mu_mean:', summary.get('mu_mean')[mask])
+    print('sigma2_mean:', summary.get('sigma2_mean')[mask])
     print('z sample (first 20):', samples['z'][-1][0][:20])
 
 
